@@ -1,0 +1,120 @@
+
+// -----------------------------------------
+// Row Template: Gallery Row
+// -----------------------------------------
+
+
+
+
+.gallery-item {
+    float: left;
+    margin: 0;
+    overflow: hidden;
+    padding-bottom: 33.33%;
+    position: relative;
+    width: 33.33%;
+
+    @media @tablet {
+        padding-bottom: 50%;
+        width: 50%;
+    }
+
+    @media only screen and (max-width: 700px) {
+        padding-bottom: 100%;
+        width: 100%;
+    }
+
+
+    &:hover {
+    }
+}
+
+
+.gallery__figure {
+    .flex-display;
+    margin: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+
+.gallery__image-link {
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: block;
+    .flex-grow(1);
+}
+
+
+.gallery__image {
+    display: none;
+    visibility: hidden;
+}
+
+
+.caption-link {
+    display: block;
+}
+
+
+.gallery__caption {
+    background-color: @color__primary;
+    .flex-display;
+    .align-items(center);
+    margin: 0;
+    opacity: 0;
+    padding: 50px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    text-align: center;
+    .transition(opacity .5s ease);
+    z-index: 2;
+
+    &:hover,
+    &:focus,
+    &:active {
+        opacity: 0.9;
+    }
+}
+
+
+.image-title,
+.image-description {
+    font-family: @font__p--font-family;
+    font-size: 17px;
+    font-weight: 400;
+    text-rendering: optimizeLegibility;
+}
+
+
+.image-title {
+    color: lighten(@color__primary, 100%);
+    font-size: 17px;
+    letter-spacing: 2px;
+    margin: 25px 0 4px;
+    text-transform: uppercase;
+    -webkit-font-smoothing: subpixel-antialiased;
+
+    @media only screen and (max-width: 700px) {
+        margin-top: 15px;
+    }
+}
+
+
+.image-description {
+    color: lighten(@color__primary, 65%);
+    font-size: 19px;
+    line-height: 30px;
+    -webkit-font-smoothing: antialiased;
+
+    @media only screen and (max-width: 700px) {
+        font-size: bkscale(@font__p--font-size, 0.88);
+        line-height: bkscale(@font__p--line-height, 0.88);
+    }
+}

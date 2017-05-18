@@ -1,0 +1,254 @@
+
+// -----------------------------------------
+// Snippet Template: Fullscreen Navigation
+// -----------------------------------------
+
+
+
+// ------------------------------
+// #Template Navigation
+// ------------------------------
+
+
+[data-name="extendednavigation"] {
+    width: 100%;
+}
+
+
+[data-name="row"]:first-child {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 3;
+
+
+    .row {
+        background: transparent !important;
+    }
+}
+
+
+[data-name="row"]:first-child .row__container {
+    max-width: 100%;
+    padding: 15px 0;
+
+    // Flex
+    .flex-display;
+    .align-items(flex-start);
+
+
+    // So navigation aligns correctly
+    .navigation-list {
+        width: 100%;
+    }
+
+
+
+    // Navigation List
+    // ------------------------------
+
+
+    .navigation-list {
+        background-color: @color__navigation-list--background;
+        margin: 0;
+        text-align: center;
+    }
+
+
+
+    // Navigation Item
+    // ------------------------------
+
+
+    .navigation-item {
+        margin-right: 12px;
+
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+
+
+    &.navigation-open .navigation-item {
+    }
+
+
+
+    // Navigation Link
+    // ------------------------------
+
+
+    .navigation-item {
+
+
+        .item-name {
+            color: @color__navigation--text;
+            font-family: @font__h1--font-family;
+            font-size: @font__navigation--font-size;
+            line-height: @font__navigation--line-height;
+            padding: 10px 0;
+
+            @media only screen and (max-width: 700px) {
+                font-size: @font__navigation--font-size * 0.8;
+                line-height: @font__navigation--line-height * 0.8;
+                padding: 6px 0;
+            }
+        }
+
+
+        // Selected / Hover / Active State
+        &.selected .item-name,
+        &:hover .item-name,
+        &:focus .item-name {
+            color: @color__navigation--text--selected;
+
+            @media @tablet {
+                color: @color__navigation--text--selected;
+            }
+        }
+    }
+
+
+
+
+    // Dropdown Menu
+    // ------------------------------
+
+
+    // Dropdown Arrow
+    .item-name--parent:after {
+        border: 5px solid transparent;
+        border-top-color: @color__navigation--text;
+        content: "";
+        display: inline-block;
+        margin-left: 6px;
+        vertical-align: middle;
+    }
+
+
+    // Dropdown Menu List
+    .navigation-list--children {
+        background-color: @color__navigation-item--background;
+        display: block;
+        opacity: 0;
+        overflow: hidden;
+        height: 0;
+        position: relative;
+        transition: opacity 0.35s ease, visibility 0.35s ease;
+        visibility: hidden;
+
+
+        // Dropdown Item Link
+        .item-name {
+            padding: 10px 15px;
+        }
+    }
+
+
+    // Dropdown Menu - Open
+    .navigation-item.folder-open .navigation-list--children {
+        display: block;
+        height: auto;
+        margin: 0 auto;
+        opacity: 1;
+        padding: 10px 0;
+        width: auto;
+        transition: opacity 0.35s ease, visibility 0.35s ease;
+        visibility: visible;
+
+        @media @mobile {
+            padding: 0;
+        }
+    }
+}
+
+
+
+    //  Navigation Toggle Button
+    // ------------------------------
+
+
+.navigation-toggle {
+    display: none;
+    visibility: hidden;
+
+    @media only screen and (max-width: 700px) {
+        background-clip: content-box;
+        background-color: @color__navigation--text;
+        border-radius: 0;
+        cursor: pointer;
+        overflow: hidden;
+        padding: 24px 15px 24px 5px;
+        position: absolute;
+        top: 20px;
+        right: 25px;
+        height: 50px;
+        width: 50px;
+        margin-left: auto;
+        text-indent: -99999px;
+        z-index: 4;
+    }
+
+
+    &:hover {
+        background-color: @color__navigation--text;
+    }
+
+
+    // Top and bottom navigation item bar
+	&:after,
+	&:before {
+	    background: @color__navigation--text;
+		content: "";
+		display: block;
+		margin-right: 0;
+		margin-left: 0;
+		position: absolute;
+		left: 5px;
+
+		height: 2px;
+		width: 30px;
+    }
+
+
+    // Top bar
+	&:before {
+		top: 13px;
+	}
+
+	// Bottom bar
+	&:after {
+		bottom: 13px;
+	}
+
+
+	// Toggle Button open state
+    // ------------------------------
+
+	.open & {
+		position: relative;
+		z-index: 100000;
+		background-color: transparent;
+
+		&:before {
+			top: 23px;
+			background: red;
+			-webkit-transform: rotate(45deg); -moz-transform: rotate(45deg);
+			-o-transform: rotate(45deg); -ms-transform: rotate(45deg);
+			transform: rotate(45deg);
+
+			@media @mobile {
+				top: 21px;
+			}
+
+		}
+		&:after {
+			bottom: 21px;
+			background: red;
+			-webkit-transform: rotate(-45deg); -moz-transform: rotate(-45deg);
+			-o-transform: rotate(-45deg); -ms-transform: rotate(-45deg);
+			transform: rotate(-45deg);
+		}
+	}
+}

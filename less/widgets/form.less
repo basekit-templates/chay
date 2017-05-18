@@ -1,0 +1,93 @@
+
+// -----------------------------------------
+// Row Template: Form Row
+// -----------------------------------------
+
+
+legend {
+    color: @color__h1--text;
+    font-family: @font__h1--font-family;
+    font-size: @font__h2--font-size;
+    font-weight: @font__h2--font-weight;
+    line-height: @font__h2--line-height;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+}
+
+
+label {
+	color: @color__p--text;
+	font-family: @font__h1--font-family;
+	font-size: 24px;
+	line-height: 32px;
+	margin-bottom: 10px;
+}
+
+
+.form-group {
+    margin-bottom: 25px;
+    position: relative;
+
+    &:hover,
+    &:focus,
+    &:active {
+        &:after {
+            background: @color__primary;
+        }
+    }
+
+
+    // Removes border
+    &:last-child:after,
+    &.js-recaptcha {
+        display: none;
+    }
+}
+
+
+input,
+input[type="search"],
+input[type="email"],
+input[type="password"],
+textarea,
+.input--single-line {
+	background-color: transparent;
+    border: 3px solid fade(@color__primary, 30%);
+    color: @color__p--text;
+    font-family: @font__p--font-family;
+    font-size: 18px;
+    font-weight: @font__p--font-weight;
+    line-height: 28px;
+    outline: none;
+    padding: 10px 12px;
+    position: relative;
+    .transition(border 0.25s ease);
+    width: 100%;
+
+    &:focus,
+    &:active,
+    &:hover {
+        border-color: @color__primary;
+        box-shadow: none;
+        outline: 0;
+    }
+
+    &::-webkit-input-placeholder {
+        color: @color__p--text;
+    }
+
+
+    &::-moz-placeholder {
+        color: @color__p--text;
+    }
+
+
+    &:-ms-input-placeholder {
+        color: @color__p--text;
+    }
+
+
+    &::placeholder {
+        color: @color__p--text;
+    }
+}
