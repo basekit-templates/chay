@@ -142,6 +142,12 @@
 }
 
 
+// Removes padding from third row for full width image
+[data-name="row"]:nth-child(3) .row--layout-wide .row__container {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
 
 .row--layout-full,
 .row--layout-wide {
@@ -154,8 +160,8 @@
 
 
         .row__container {
-            padding-top: 0;
-            padding-bottom: 0;
+            // padding-top: 0;
+            // padding-bottom: 0;
         }
 
 
@@ -164,8 +170,7 @@
             &[data-name="image"],
             &[data-name="slideshow"],
             &[data-name="youtube"],
-            &[data-name="map"],
-            &[data-name="gallery"] {
+            &[data-name="map"] {
                 margin-bottom: 0 !important;
                 margin-top: 0 !important;
             }
@@ -191,10 +196,18 @@
 
         &:first-child {
             margin-top: @height__default--padding;
+
+            @media only screen and (max-width: 700px) {
+                margin-top: @height__default--padding / 2;
+            }
         }
 
         &:last-child {
             margin-bottom: @height__default--padding;
+
+            @media only screen and (max-width: 700px) {
+                margin-top: @height__default--padding / 2;
+            }
         }
     }
 
@@ -276,8 +289,7 @@
             &[data-name="image"],
             &[data-name="slideshow"],
             &[data-name="youtube"],
-            &[data-name="map"],
-            &[data-name="gallery"] {
+            &[data-name="map"] {
                 padding-left: 0;
                 padding-right: 0;
             }
@@ -287,6 +299,10 @@
         [data-name="image"] .image {
             object-fit: cover;
             min-width: 100% ;
+
+            @media only screen and (max-width: 1100px) {
+                min-height: 400px;
+            }
 
             @media only screen and (max-width: 700px) {
                 min-height: auto;
