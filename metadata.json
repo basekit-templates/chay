@@ -3,6 +3,7 @@
     "widgetVersion": 2,
     "thumbnail":"thumbnail.png",
     "templateType":"standard",
+    "preprocessor": "sass",
     "pageTypes":["home"],
     "screenshot":"screenshot.jpg",
     "images":[
