@@ -1,5 +1,5 @@
 {
-    "name":"chay",
+    "name":"Chay",
     "preprocessor": "sass",
     "widgetVersion": 2,
     "thumbnail":"thumbnail.png",
@@ -174,7 +174,7 @@
             "color__p--text": "#596062"
         },
         "feature": {
-            "color__feature--background": "gainsboro",
+            "color__feature--background": "#000000",
             "color__feature-headline--text": "white",
             "color__feature-strapline--text": "white",
             "color__feature-button--text": "white",

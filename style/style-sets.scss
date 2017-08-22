@@ -1,0 +1,48 @@
+
+$style-sets: (
+    example_02: (
+        row-color-darkest: #082D3A,
+        row-color-dark: #888888,
+        row-color-lightest: #FFFFFF,
+        row-color-light: #ECE7DD,
+        row-color-accent: #FEB904,
+        row-color-dark-foreground: #FFFFFF,
+        row-color-light-foreground: #888888,
+        row-color-accent-foreground: #888888,
+        row-font-body: 'Josefin Sans',
+        row-font-heading: 'Lato',
+        row-font-weight: 300
+    )
+);
+
+
+$style-set: map-get($style-sets, $style-set-id);
+
+$row-color-darkest: map-get($style-set, 'row-color-darkest');
+$row-color-dark: map-get($style-set, 'row-color-dark');
+$row-color-lightest: map-get($style-set, 'row-color-lightest');
+$row-color-light: map-get($style-set, 'row-color-light');
+$row-color-accent: map-get($style-set, 'row-color-accent');
+$row-color-dark-foreground: map-get($style-set, 'row-color-dark-foreground');
+$row-color-light-foreground: map-get($style-set, 'row-color-light-foreground');
+$row-color-accent-foreground: map-get($style-set, 'row-color-accent-foreground');
+$row-font-heading: map-get($style-set, 'row-font-heading');
+$row-font-body: map-get($style-set, 'row-font-body');
+$row-font-weight: map-get($style-set, 'row-font-weight');
+
+
+
+:root {
+    --style-set-id: unquote($style-set-id);
+    --row-color-darkest: $row-color-darkest;
+    --row-color-dark: $row-color-dark;
+    --row-color-lightest: $row-color-lightest;
+    --row-color-light: $row-color-light;
+    --row-color-accent: $row-color-accent;
+    --row-color-dark-foreground: $row-color-dark-foreground;
+    --row-color-light-foreground: $row-color-light-foreground;
+    --row-color-accent-foreground: $row-color-accent-foreground;
+    --row-font-heading: $row-font-heading;
+    --row-font-body: $row-font-body;
+    --row-font-weight: $row-font-weight;
+}

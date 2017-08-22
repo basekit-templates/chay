@@ -1,0 +1,117 @@
+
+// ----------------------------------
+// BaseKit Template: Chay
+// ----------------------------------
+
+
+
+
+
+// -----------------------------
+//  1. Colours
+// -----------------------------
+
+
+.row--light {
+    background-color: $row-color-light;
+
+
+    body,
+    p,
+    li,
+    a,
+    blockquote,
+    i,
+    strong,
+    code,
+    pre,
+    span {
+        color: $row-color-dark;
+    }
+
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+        color: $row-color-darkest;
+    }
+
+
+    button,
+    .button {
+        background-color: $row-color-darkest;
+        color: $row-color-lightest;
+    }
+}
+
+
+.row--accent {
+    background-color: $row-color-accent;
+
+
+    body,
+    p,
+    li,
+    a,
+    blockquote,
+    i,
+    strong,
+    code,
+    pre,
+    span {
+        color: $row-color-dark;
+    }
+
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+        color: $row-color-darkest;
+    }
+
+
+    button,
+    .button {
+        background-color: $row-color-darkest;
+        color: $row-color-lightest;
+    }
+}
+
+
+.row--dark {
+    background-color: $row-color-darkest;
+
+
+    body,
+    p,
+    li,
+    a,
+    blockquote,
+    i,
+    strong,
+    code,
+    pre,
+    span {
+        color: $row-color-light;
+    }
+
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+        color: $row-color-lightest;
+    }
+
+
+    button,
+    .button {
+        background-color: $row-color-accent;
+        color: $row-color-darkest;
+    }
+}

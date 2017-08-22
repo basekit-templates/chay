@@ -687,475 +687,6 @@ template {
 }
 
 
-
-// ------------------------------
-// CORE: Typography (Typi)
-// ------------------------------
-
-
-
-
-$breakpoints: () !default;
-$typi: (null: ($font__p--font-size, $font__p--line-height)) !default;
-$typi-ms: false !default;
-$typi-breakpoint: null !default;
-
-
-
-
-// _ty-breakpoint
-// ==============
-// Allows use of breakpoint-sass and mappy-bp.
-// Falls back to default method otherwise.
-
-
-@mixin _ty-breakpoint(
-  $typi-map
-) {
-  $breakpoint: map-get($typi-map, breakpoint);
-  $breakpoints: map-get($typi-map, breakpoints);
-  $bp-val: map-get($breakpoints, $breakpoint);
-
-  @if $typi-breakpoint == breakpoint {
-    @if mixin-exists(breakpoint) {
-      @include breakpoint-set('to ems', true);
-      @include breakpoint(map-get($breakpoints, $breakpoint)) {
-        @include _ty-write-props($typi-map);
-      }
-    } @else {
-      @error 'Breakpoint-sass Library not found'
-    }
-  }
-
-  @else if $typi-breakpoint == mappy-breakpoint or $typi-breakpoint == mappy-breakpoints {
-    @if mixin-exists(mappy-bp) {
-      @include mappy-bp(map-get($breakpoints, $breakpoint)) {
-        @include _ty-write-props($typi-map);
-      }
-    } @else {
-      @error 'Mappy Breakpoints Library not found'
-    }
-  }
-
-  @else {
-    @media all and (min-width: #{map-get($breakpoints, $breakpoint)}) {
-      @include _ty-write-props($typi-map);
-    }
-  }
-}
-
-
-
-
-// _ty-write-props
-// ===============
-// Writes font-size (and line height) properties
-@mixin _ty-write-props (
-  $typi-map
-) {
-  $target: map-get($typi-map, target);
-  $breakpoint: map-get($typi-map, breakpoint);
-  $typi: map-get($typi-map, typi);
-  $base: map-get($typi-map, base);
-  $rem: map-get($typi-map, rem);
-
-  $bp-val: map-get($target, $breakpoint);
-  $font-size: null;
-  $line-height: null;
-
-  @if type-of($bp-val) == 'null' {
-    $last-valid-breakpoint: map-get($typi-map, last-valid-breakpoint);
-    $bp-val: map-get($target, $last-valid-breakpoint);
-  }
-
-  @if type-of($bp-val) == "list" and length($bp-val) > 1 {
-    $font-size: nth($bp-val, 1);
-    $line-height: nth($bp-val, 2);
-    font-size: _ty-font-size($font-size, $breakpoint, $typi, $rem, $base, $typi-map);
-    line-height: $line-height;
-  }
-  @else  {
-    $font-size: $bp-val;
-    font-size: _ty-font-size($font-size, $breakpoint, $typi, $rem, $base, $typi-map);
-  }
-}
-
-
-
-
-// _ty-font-size
-// =============
-// Calls _ty-calc-font-size or _ty-base-size
-@function _ty-font-size(
-  $font-size,
-  $breakpoint,
-  $typi,
-  $rem,
-  $base: false,
-  $typi-map: false
-) {
-  @if $base == true {
-    @return _ty-base-size($font-size);
-  } @else {
-    @return _ty-calc-font-size($font-size, $breakpoint, $typi, $rem, $typi-map);
-  }
-}
-
-
-
-
-// _ty-calc-font-size
-// =======
-// returns correct rem value depending on
-// breakpoint
-@function _ty-calc-font-size(
-  $font-size,
-  $breakpoint,
-  $typi,
-  $rem,
-  $typi-map: false
-) {
-  @if unitless($font-size) {
-    @if function-exists(ms) {
-      $typi-ms: map-get($typi-map, ms);
-      @if $rem {
-        @return _ty-strip-unit(_ty-ms($font-size, $breakpoint, $typi-ms, $typi-map)) * 1rem;
-      } @else {
-        @return _ty-ms($font-size, $breakpoint, $typi-ms, $typi-map);
-      }
-    } @else {
-      @error "Modular Scale Library required";
-    }
-  }
-
-  // Convert px and em into rem
-  @else if $rem {
-    @if unit($font-size) == 'em' {
-      @return _ty-strip-unit($font-size) * 1rem;
-    }
-
-    @else if unit($font-size) == 'px' {
-      $basemap: map-get($typi, $breakpoint);
-      $basefont: if(type-of($basemap) == 'list', nth($basemap, 1), $basemap);
-
-      @if $basefont == null {
-        $basefont: nth(map-get($typi, null), 1);
-      }
-
-      @return $font-size / $basefont * 1rem;
-    }
-
-    @else {
-      @return $font-size;
-    }
-  }
-
-  // Converts rem and px into em
-  @else {
-    @if unit($font-size) == 'rem' {
-      @return _ty-strip-unit($font-size) * 1em;
-    }
-
-    @else if unit($font-size) == 'px' {
-      $basemap: map-get($typi, $breakpoint);
-      $basefont: if(type-of($basemap) == 'list', nth($basemap, 1), $basemap);
-
-      @if $basefont == null {
-        $basefont: nth(map-get($typi, null), 1);
-      }
-
-      @return _ty-em($font-size, $basefont);
-    }
-
-    @else {
-      @return $font-size;
-    }
-  }
-}
-
-
-
-
-// _ty-base-size
-// =============
-// Converts Typi sizes into percentages
-@function _ty-base-size(
-  $font-size
-) {
-  @if unit($font-size) == 'px' {
-    @return $font-size / 16px * 100%;
-  }
-
-  @else {
-    @error 'Typi font sizes must be written in pixels';
-  }
-}
-
-
-
-
-// _ty-strip-unit
-// ==============
-@function _ty-strip-unit($num) {
-  @return $num / ($num * 0 + 1);
-}
-
-// _ty-em
-// ========
-@function _ty-em($font-size, $ref-size: false) {
-  @if ($ref-size) {
-    @return $font-size / $ref-size * 1em;
-  }
-}
-
-
-
-// _ty-rem
-// =========
-@function _ty-rem($font-size) {
-  @if unit($font-size) == 'px' {
-    @return strip-unit($font-size) / 16 * 1rem;
-  }
-  @else if unit($font-size) == 'em' {
-    @return strip-unit($font-size) * 1rem;
-  }
-}
-
-
-
-
-// _ty-ms
-// ======
-@function _ty-ms(
-  $multiplier,
-  $breakpoint: null,
-  $typi-ms: $typi-ms,
-  $typi-map: false
-) {
-  $ms-setting: null;
-  @if map-has-key($typi-ms, $breakpoint) {
-    $ms-setting: map-get($typi-ms, $breakpoint);
-  } @else {
-    $last-valid-ms: map-get($typi-map, last-valid-ms);
-    $ms-setting: map-get($typi-ms, $last-valid-ms);
-  }
-
-  $ty-ms-base: null;
-  $ty-ms-ratio: null;
-
-  @for $i from 1 to length($ms-setting) + 1 {
-    $val: nth($ms-setting, $i);
-
-
-    // For combinations of multiple bases + multiple ratios
-    @if type-of($val) == 'list' {
-      @if not unitless(nth($val, 1)) {
-        $ty-ms-base: $val;
-      } @else {
-        $ty-ms-ratio: $val;
-      }
-    }
-    // For combinations of 1 base + multiple ratios
-    @else {
-      @if unitless($val) {
-        @if $ty-ms-ratio == null {
-          $ty-ms-ratio: $val;
-        } @else if type-of($ty-ms-ratio) == "number" {
-          $ty-ms-ratio: $ty-ms-ratio $val;
-        } @else if type-of($ty-ms-ratio) == "list" {
-          $ty-ms-ratio: append($ty-ms-ratio, $val);
-        }
-      }
-
-      @else {
-        @if $ty-ms-base == null {
-          $ty-ms-base: $val;
-        } @else if type-of($ty-ms-base) == 'number' {
-          $ty-ms-base: ($ty-ms-base $val)
-        } @else if type-of($ty-ms-base) == 'list' {
-          $ty-ms-base: append($ty-ms-base, $val);
-        }
-      }
-    }
-  }
-
-  @if $ty-ms-base == null {
-    $ty-ms-base: 1em;
-  }
-
-  @return ms($multiplier, $ty-ms-base, $ty-ms-ratio);
-}
-
-
-
-
-// _ty-get-breakpoints
-// ===================
-@function _ty-get-breakpoints($breakpoints, $typi-ms, $target) {
-  $_return: null;
-
-  @each $breakpoint, $val in $breakpoints {
-    @if type-of($typi-ms) == 'map' and map-has-key($typi-ms, $breakpoint) {
-      @if not index($_return, $breakpoint) {
-        $_return: append($_return, $breakpoint);
-      }
-    }
-
-    @if map-has-key($target, $breakpoint) {
-      @if not index($_return, $breakpoint) {
-        $_return: append($_return, $breakpoint);
-      }
-    }
-  }
-  @return $_return;
-}
-
-
-
-
-// _ty-get-base-font
-@function _ty-get-base-font($typi) {
-  $base-map: map-get($typi, null);
-  @return nth($base-map, 1);
-}
-
-
-
-
-// _ty-get-base-line-height
-@function _ty-get-base-line-height($typi) {
-  $base-map: map-get($typi, null);
-  $base-line-height: null;
-
-  @if length($base-map) > 1 {
-    $base-line-height: nth($base-map, 2);
-  } @else {
-    @error "$typi map should contain a second argument (line-height) in the `null` key";
-  }
-
-  @if not unit($base-line-height) == "" {
-    @error "line-height multiple on the `null` key should be unitless";
-  }
-
-  @return $base-line-height;
-}
-
-
-
-
-@mixin typi(
-  $target-map,
-  $breakpoints: $breakpoints,
-  $typi: $typi,
-  $typi-ms: $typi-ms,
-  $base: false,
-  $rem: true
-) {
-  $typi-map: (
-    target: $target-map,
-    breakpoints: $breakpoints,
-    typi: $typi,
-    base: $base,
-    rem: $rem,
-    ms: $typi-ms
-  );
-
-  $breakpoints-to-output: _ty-get-breakpoints($breakpoints, $typi-ms, $target-map);
-  @each $breakpoint in $breakpoints-to-output {
-    $target: $target-map;
-    $typi-map: map-merge($typi-map, (breakpoint: $breakpoint));
-
-    @if $breakpoint == null {
-      @include _ty-write-props($typi-map);
-    }
-
-    @else {
-      @if map-has-key($breakpoints, $breakpoint) {
-        @include _ty-breakpoint($typi-map);
-      } @else {
-        @warn "Missing #{$breakpoint} in $breakpoints map";
-      }
-    }
-
-    // Add previous valid breakpoint
-    @if map-has-key($target, $breakpoint) {
-      $typi-map: map-merge($typi-map, (last-valid-breakpoint: $breakpoint))
-    }
-
-    // Add previous valid ms
-    @if type-of($typi-ms) == 'map' and map-has-key($typi-ms, $breakpoint)  {
-      $typi-map: map-merge($typi-map, (last-valid-ms: $breakpoint))
-    }
-  }
-}
-
-@mixin typi-base(
-  $typi: $typi,
-  $breakpoints: $breakpoints,
-  $typi-ms: $typi-ms,
-  $base: true,
-  $rem: true
-) {
-  @include typi(
-    $typi,
-    $breakpoints,
-    $typi: $typi,
-    $typi-ms: $typi-ms,
-    $base: $base,
-    $rem: $rem
-  );
-}
-
-// Vertical rhythm function. Possible to output both EM and REM.
-// Requires line height to be set on $typi map for 'null' breakpoint
-@function vr($vr, $current-font: null, $typi: $typi) {
-  $base-font-size: _ty-get-base-font($typi);
-  $base-line-height: _ty-get-base-line-height($typi);
-  $rhythm-context: $vr * $base-line-height;
-
-  // Converts into EM if $current-font is provided
-  @if $current-font {
-    @if unit($current-font) == "px" {
-      $rhythm-context: $rhythm-context * $base-font;
-
-      @return $rhythm-context / $current-font * 1em;
-    }
-
-    @if unit($current-font) == "em" {
-      @return $rhythm-context / _ty-strip-unit($current-font) * 1em;
-    }
-
-    @else {
-      @error "Font sizes should either be px or em if $current-font is provided";
-    }
-  }
-
-  @else {
-    @if unit($base-line-height) == 'px' {
-      @return $vr * $base-line-height / $base-font-size * 1rem;
-    } @else {
-      @return $vr * $base-line-height * 1rem;
-    }
-  }
-}
-
-// Responsive Vertical Rhythm
-@mixin rvr($props, $vr, $typi: $typi) {
-  $base-font-size: _ty-get-base-font($typi);
-  $base-line-height: _ty-get-base-line-height($typi);
-  $unit: unit($base-line-height);
-
-  @each $prop in $props {
-    @if $unit == 'px' {
-      #{$prop}: $base-line-height / $base-font * 1rem * $vr;
-    } @else {
-      #{$prop}: $base-line-height * 1rem * $vr;
-    }
-    #{$prop}: calc(var(--baseline) * #{1rem * $vr});
-  }
-}
-
-
 // -------------------------------------
 //  CORE - Typography
 // -------------------------------------
@@ -1168,77 +699,33 @@ $typi-breakpoint: null !default;
 //  Table of Contents
 // -----------------------------
 
-//  1.      Typi
-//  1.1     Typi Defaults
+//  1.      Headings & Body Text
+//  1.1     Body Text
+//  1.2     Heading 1
+//  1.3     Heading 2
+//  1.4     Heading 3
+//  1.5     Heading 4
+//  1.6     Anchor Link
+//  1.7     Blockquote
+//  1.8     Company Name
+//  1.9     Tables
 
-//  2.      Headings & Body Text
-//  2.1     Body Text
-//  2.2     Heading 1
-//  2.3     Heading 2
-//  2.4     Heading 3
-//  2.5     Heading 4
-//  2.6     Anchor Link
-//  2.7     Blockquote
-//  2.8     Company Name
-//  2.9     Tables
-
-//  3.       Spacing
-//  4.       Font Styles
+//  2.      Spacing
+//  3.      Font Styles
 
 
 
 
 
 // ---------------------------
-//  1. Typi
+//  1. Headings & Body Text
 // ---------------------------
 
 
 
 
-//  1.1 - Typi Defaults
+//  1.1 - Body Text
 // ------------------------------
-
-
-$breakpoints: (
-    small: 0px,
-    medium: 700px,
-    large: 1280px
-);
-
-
-// Set typographic base default (Based on paragraph size)
-$typi: (
-    null: (16px, 1.6),
-    small: (16px),
-    medium: (17px),
-    large: (18px)
-);
-
-
-// Apply base default to HTML element (16px - font-size: 100%)
-html {
-    @include typi-base();
-}
-
-
-
-
-
-// ---------------------------
-//  2. Headings & Body Text
-// ---------------------------
-
-
-
-
-//  2.1 - Body Text
-// ------------------------------
-
-
-$body-font-map: (
-    null: ($font__p--font-size, $font__p--line-height)
-) !default;
 
 
 body {
@@ -1254,115 +741,157 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+body {
+    color: $font-swatch5-color;
+    font-family: $font-swatch5-font-family;
+    font-size: $font-swatch5-font-size;
+    font-weight: $font-swatch5-font-weight;
+    letter-spacing: $font-swatch5-letter-spacing;
+    line-height: $font-swatch5-line-height;
+}
+
 
 // Paragraph, List Elements, Blockquote
 p,
 li,
 blockquote,
 .paragraph {
-    @include typi($body-font-map);
     color: $color__p--text;
     font-family: $font__p--font-family;
+    font-size: $font__p--font-size;
     font-weight: $font__p--font-weight;
     letter-spacing: $font__p--letter-spacing;
+    line-height: $font__p--line-height;
+}
+
+p,
+li,
+blockquote,
+.paragraph {
+    color: $font-swatch5-color;
+    font-family: $font-swatch5-font-family;
+    font-size: $font-swatch5-font-size;
+    font-weight: $font-swatch5-font-weight;
+    letter-spacing: $font-swatch5-letter-spacing;
+    line-height: $font-swatch5-line-height;
 }
 
 
 
 
-//  2.2 - Heading 1
+//  1.2 - Heading 1
 // ------------------------------
-
-
-$h1-font-map: (
-    null: ($font__h1--font-size, $font__h1--line-height)
-) !default;
-
 
 
 h1,
 .heading--1 {
-    @include typi($h1-font-map);
     color: $color__h1--text;
     font-family: $font__h1--font-family;
+    font-size: $font__h1--font-size;
     font-weight: $font__h1--font-weight;
     letter-spacing: $font__h1--letter-spacing;
+    line-height: $font__h1--line-height;
+}
+
+h1,
+.heading--1 {
+    color: $font-swatch1-color;
+    font-family: $font-swatch1-font-family;
+    font-size: $font-swatch1-font-size;
+    font-weight: $font-swatch1-font-weight;
+    letter-spacing: $font-swatch1-letter-spacing;
+    line-height: $font-swatch1-line-height;
 }
 
 
 
 
-//  2.3 - Heading 2
+
+//  1.3 - Heading 2
 // ------------------------------
-
-
-$h2-font-map: (
-    null: ($font__h2--font-size, $font__h2--line-height),
-) !default;
 
 
 h2,
 .heading--2 {
-    @include typi($h2-font-map);
     color: $color__h2--text;
     font-family: $font__h2--font-family;
     font-size: $font__h2--font-size;
     font-weight: $font__h2--font-weight;
-    line-height: $font__h2--line-height;
     letter-spacing: $font__h2--letter-spacing;
+    line-height: $font__h2--line-height;
+}
+
+
+h2,
+.heading--2 {
+    color: $font-swatch2-color;
+    font-family: $font-swatch2-font-family;
+    font-size: $font-swatch2-font-size;
+    font-weight: $font-swatch2-font-weight;
+    letter-spacing: $font-swatch2-letter-spacing;
+    line-height: $font-swatch2-line-height;
 }
 
 
 
 
-//  2.4 - Heading 3
+//  1.4 - Heading 3
 // ------------------------------
-
-
-$h3-font-map: (
-    null: ($font__h3--font-size, $font__h3--line-height),
-) !default;
 
 
 h3,
 .heading--3 {
-    @include typi($h3-font-map);
     color: $color__h3--text;
     font-family: $font__h3--font-family;
     font-size: $font__h3--font-size;
     font-weight: $font__h3--font-weight;
-    line-height: $font__h3--line-height;
     letter-spacing: $font__h3--letter-spacing;
+    line-height: $font__h3--line-height;
+}
+
+
+h3,
+.heading--3 {
+    color: $font-swatch3-color;
+    font-family: $font-swatch3-font-family;
+    font-size: $font-swatch3-font-size;
+    font-weight: $font-swatch3-font-weight;
+    letter-spacing: $font-swatch3-letter-spacing;
+    line-height: $font-swatch3-line-height;
 }
 
 
 
 
-//  2.5 - Heading 4
+//  1.5 - Heading 4
 // ------------------------------
-
-
-$h4-font-map: (
-    null: ($font__h4--font-size, $font__h4--line-height),
-) !default;
 
 
 h4,
 .heading--4 {
-    @include typi($h4-font-map);
     color: $color__h4--text;
     font-family: $font__h4--font-family;
     font-size: $font__h4--font-size;
     font-weight: $font__h4--font-weight;
-    line-height: $font__h4--line-height;
     letter-spacing: $font__h4--letter-spacing;
+    line-height: $font__h4--line-height;
+}
+
+h4,
+.heading--4 {
+    color: $font-swatch4-color;
+    font-family: $font-swatch4-font-family;
+    font-size: $font-swatch4-font-size;
+    font-weight: $font-swatch4-font-weight;
+    letter-spacing: $font-swatch4-letter-spacing;
+    line-height: $font-swatch4-line-height;
 }
 
 
 
 
 
-//  2.6 - Anchor Link
+//  1.6 - Anchor Link
 // ------------------------------
 
 
@@ -1379,7 +908,7 @@ a {
 
 
 
-//  2.7 - Blockquote
+//  1.7 - Blockquote
 // ------------------------------
 
 
@@ -1398,17 +927,17 @@ blockquote {
 
 
 
-//  2.8 - Company Name
+//  1.8 - Company Name
 // ------------------------------
 
 
 .company-link {
+    color: $color__companyname--text;
     font-family: $font__companyname--font-family;
     font-size: $font__companyname--font-size;
     font-weight: $font__companyname--font-weight;
-    line-height: $font__companyname--line-height;
     letter-spacing: $font__companyname--letter-spacing;
-    color: $color__companyname--text;
+    line-height: $font__companyname--line-height;
     -ms-word-break: break-word;
     word-wrap: break-word;
     -webkit-hyphens: none;
@@ -1419,42 +948,34 @@ blockquote {
 
 
 
-//  2.9 - Feature Text
+//  1.9 - Feature Text
 // ------------------------------
 
 
-$feature-headline-font-map: (
-    null: ($font__feature-headline--font-size, $font__feature-headline--line-height),
-) !default;
-
-
 .feature__headline {
-    @include typi($feature-headline-font-map);
     color: $color__feature-headline--text;
     font-family: $font__feature-headline--font-family;
+    font-size: $font__feature-headline--font-size;
     font-weight: $font__feature-headline--font-weight;
     letter-spacing: $font__feature-headline--letter-spacing;
+    line-height: $font__feature-headline--line-height;
 }
-
-
-$feature-strapline-font-map: (
-    null: ($font__feature-strapline--font-size, $font__feature-strapline--line-height),
-) !default;
 
 
 .feature__strapline {
-    @include typi($feature-strapline-font-map);
     color: $color__feature-strapline--text;
     font-family: $font__feature-strapline--font-family;
+    font-size: $font__feature-strapline--font-size;
     font-weight: $font__feature-strapline--font-weight;
     letter-spacing: $font__feature-strapline--letter-spacing;
+    line-height: $font__feature-strapline--line-height;
 }
 
 
 
 
 
-//  2.10 - Tables
+//  1.10 - Tables
 // ------------------------------
 
 
@@ -1470,13 +991,13 @@ td {
 
 
 // ---------------------------
-//  3. Spacing
+//  2. Spacing
 // ---------------------------
 
 
 
 
-//  3.1 Spacing Reset
+//  2.1 Spacing Reset
 // -----------------------------
 
 h1,
@@ -1495,7 +1016,7 @@ ul {
 
 
 
-//  3.2 Paragraph Spacing
+//  2.2 Paragraph Spacing
 // -----------------------------
 
 
@@ -1513,12 +1034,12 @@ a {
     &+ ol,
     &+ blockquote,
     &+ code {
-        margin-top: vr(1);
+        margin-top: 12px;
     }
 
 
     &+ p {
-        margin-top: vr(0.5);
+        margin-top: 6px;
     }
 }
 
@@ -1543,7 +1064,7 @@ ol {
     &+ ul,
     &+ blockquote,
     &+ code {
-        margin-top: vr(1);
+        margin-top: 12px;
     }
 
 
@@ -1553,7 +1074,7 @@ ol {
     &+ h4,
     &+ p,
     &+ li {
-        margin-top: vr(0.5);
+        margin-top: 6px;
     }
 }
 
@@ -1940,9 +1461,9 @@ $mobile: 'only screen and (max-width: 700px)';
 
 // Fieldset
 fieldset {
-  margin: 0;
-  padding: 0;
-  border: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
 }
 
 
@@ -1960,14 +1481,14 @@ legend {
 
 // Label
 label {
-  display: block;
+    display: block;
     margin: 0 0 5px;
 }
 
 
 // Selects
 select {
-    // height: vr(1);
+    // height: 12px;
     outline: none;
     border: 1px solid darken($color__body--background,15%);
     border-radius: 0;
@@ -1976,8 +1497,8 @@ select {
     text-indent: 0;
 
     @media #{$tablet} {
-      font-size: 16px;
-      line-height: 1.6;
+        font-size: 16px;
+        line-height: 1.6;
     }
 
 
@@ -1999,29 +1520,29 @@ input[type="password"],
 textarea,
 .input--single-line {
     border: 1px solid #ddd;
-    // height: vr(1);
-  padding: 6px 10px;
-  @include box-sizing(border-box);
+    // height: 12px;
+    padding: 6px 10px;
+    @include box-sizing(border-box);
     width: 100%;
 
-  @media #{$tablet} {
-    font-size: 16px;
-    line-height: 1.6;
-  }
+    @media #{$tablet} {
+        font-size: 16px;
+        line-height: 1.6;
+    }
 
 
-  &:focus {
-    border-color: #129fea;
-    box-shadow: inset 0 1px 3px #ddd;
-    outline: 0;
-  }
+    &:focus {
+        border-color: #129fea;
+        box-shadow: inset 0 1px 3px #ddd;
+        outline: 0;
+    }
 }
 
 
 // Textarea
 textarea {
-  resize: vertical;
-  min-height: 100px;
+    resize: vertical;
+    min-height: 100px;
 }
 
 
@@ -2276,84 +1797,84 @@ input[type="checkbox"] {
 
 
 .message {
-  position: relative;
-  clear: both;
-  color: $color__p--text;
-  padding-left: 1.2em;
-
-  @media #{$mobile} {
-    font-size: 14px;
-  }
-
-
-  &:before {
-    font-family: 'FontAwesome', sans-serif;
-    position: absolute;
-    left: 0;
-    top: 0;
-    line-height: 1.5;
-  }
-
-
-  h3, p {
-    margin: 0;
-    padding: 0;
-    line-height: 1.5;
+    position: relative;
+    clear: both;
     color: $color__p--text;
-    font-size: 16px;
+    padding-left: 1.2em;
 
     @media #{$mobile} {
-      font-size: 14px;
+        font-size: 14px;
     }
-  }
+
+
+    &:before {
+        font-family: 'FontAwesome', sans-serif;
+        position: absolute;
+        left: 0;
+        top: 0;
+        line-height: 1.5;
+    }
+
+
+    h3, p {
+        margin: 0;
+        padding: 0;
+        line-height: 1.5;
+        color: $color__p--text;
+        font-size: 16px;
+
+        @media #{$mobile} {
+            font-size: 14px;
+        }
+    }
 }
 
 
 // Error
 .message--error {
-  &:before {
-    content: "\f071"; // triangle
-  }
+    &:before {
+        content: "\f071"; // triangle
+    }
 }
 
 
 // Warning
 .message--warning {
-  &:before {
-    content: "\f071"; // triangle
-  }
+    &:before {
+        content: "\f071"; // triangle
+    }
 }
 
 
 // Information
 .message--information {
-  &:before {
-    content: "\f05a"; // circled i
-  }
+    &:before {
+        content: "\f05a"; // circled i
+    }
 }
 
 
 // Success
 .message--success {
-  &:before {
-    content: "\f00c"; // check
-  }
+    &:before {
+        content: "\f00c"; // check
+    }
 }
 
 
 // Not Found
 .message--not-found {
-  &:before {
-    content: "\f002"; // magnifying glass
-  }
+    &:before {
+        content: "\f002"; // magnifying glass
+    }
 }
 
 
 // Empty State
 .message--empty {
-  &:before {
-    content: "\f040"; // pencil
-  }
+    &:before {
+        content: "\f040"; // pencil
+    }
 }
 
 
@@ -2455,16 +1976,16 @@ input[type="checkbox"] {
 // -----------------------------
 
 
-.row__vertical-align {
+.row--vertical-align {
 
 
     // Add flex to top level if row height is set to full
-    &--top,
-    &--center,
-    &--bottom {
+    &-top,
+    &-center,
+    &-bottom {
 
 
-        &.row__height--full {
+        &.row--full-height {
             @include flex(0 1 auto);
             @include flex-display;
             @include flex-direction(row);
@@ -2475,46 +1996,46 @@ input[type="checkbox"] {
 
 
     // Row Alignment Top
-    &--top .row__container {
+    &-top .row__container {
         @include justify-content(flex-start);
     }
 
-    &--top .responsivecolumns {
+    &-top .responsivecolumns {
         @include align-items(flex-start);
     }
 
     // Full Height Alignment top
-    &--top.row__height--full {
+    &-top.row__height--full {
         @include align-items(flex-start);
     }
 
 
     // Row Align Center
-    &--center .row__container {
+    &-center .row__container {
         @include justify-content(center);
     }
 
-    &--center .responsivecolumns {
+    &-center .responsivecolumns {
         @include align-items(center);
     }
 
     // Full Height Alignment Center
-    &--center.row__height--full {
+    &-center.row__height--full {
         @include align-items(center);
     }
 
 
     // Row Align Bottom
-    &--bottom .row__container {
+    &-bottom .row__container {
         @include justify-content(flex-end);
     }
 
-    &--bottom .responsivecolumns {
+    &-bottom .responsivecolumns {
         @include align-items(flex-end);
     }
 
     // Full Height Alignment Bottom
-    &--bottom.row__height--full {
+    &-bottom.row__height--full {
         @include align-items(flex-end);
     }
 
@@ -2554,7 +2075,7 @@ input[type="checkbox"] {
 // -------------------------------------
 
 
-.row__height {
+.row {
 
 
     &--no-padding {
@@ -2563,19 +2084,19 @@ input[type="checkbox"] {
     }
 
 
-    &--thin {
+    &--thin-height {
         padding-top: 15px;
         padding-bottom: 15px;
     }
 
 
-    &--default {
+    &--default-height {
         padding-top: 40px;
         padding-bottom: 40px;
     }
 
 
-    &--full {
+    &--full-height {
         min-height: 100vh;
         padding-top: 80px;
         padding-bottom: 80px;
@@ -2589,10 +2110,10 @@ input[type="checkbox"] {
 // -------------------------------------
 
 
-.row__layout {
+.row--layout {
 
 
-    &--contained {
+    &-contained .container {
         margin: 0 auto;
         padding-left: 30px;
         padding-right: 30px;
@@ -2600,7 +2121,7 @@ input[type="checkbox"] {
     }
 
 
-    &--wide {
+    &-wide .container {
         margin: 0 auto;
         padding-left: 30px;
         padding-right: 30px;
@@ -2608,7 +2129,7 @@ input[type="checkbox"] {
     }
 
 
-    &--full {
+    &-full .container {
         padding-left: 60px;
         padding-right: 60px;
         width: 100%;
@@ -2620,7 +2141,7 @@ input[type="checkbox"] {
     width: 100%;
 }
 
-
+//
 // -----------------------------
 //  CORE - Row Style (Colour)
 // -----------------------------
@@ -2628,27 +2149,33 @@ input[type="checkbox"] {
 
 
 
-//  Row Colours
+//  Row Colour
 // -------------------------------------
 
 
 // Colour variables
-$row-color-dark: #34444E;
-$row-color-light: #fff;
-$row-color-accent: #3E9CCB;
-$row-color-dark-foreground: #fff;
-$row-color-light-foreground: #1a1919;
-$row-color-accent-foreground: #fff;
+$row-color--lightest: #FFFFFF;
+$row-color--light: #ECE7DD;
+$row-color--accent: #FEB904;
+$row-color--dark: #888888;
+$row-color--darkest: #082D3A;
+
+$row-color--light-foreground: $row-color--light;
+$row-color--accent-foreground: $row-color--accent;
+$row-color--dark-foreground: $row-color--darkest;
 
 
 // Colour application with backup
 :root {
-    --row-color-dark: $row-color-dark;
-    --row-color-light: $row-color-light;
-    --row-color-accent: $row-color-accent;
-    --row-color-dark-foreground: $row-color-dark-foreground;
-    --row-color-light-foreground: $row-color-light-foreground;
-    --row-color-accent-foreground: $row-color-accent-foreground;
+    --row-color--lightest: $row-color--lightest;
+    --row-color--light: $row-color--light;
+    --row-color--accent: $row-color--accent;
+    --row-color--dark: $row-color--dark;
+    --row-color--darkest: $row-color--darkest;
+
+    --row-color--dark-foreground: $row-color--dark-foreground;
+    --row-color--light-foreground: $row-color--light-foreground;
+    --row-color--accent-foreground: $row-color--accent-foreground;
 }
 
 
@@ -2670,8 +2197,8 @@ $row-color-accent-foreground: #fff;
 // Widget Positioning
 .widget {
     @include clearfix;
-    margin-bottom: vr(1);
-  position: relative;
+    margin-bottom: 12px;
+    position: relative;
 
 
     &:last-child {
@@ -2682,7 +2209,7 @@ $row-color-accent-foreground: #fff;
 
 // Removes margin for the spacing widget
 .widget--zone-widget[data-name="space"] {
-  margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 
@@ -2795,18 +2322,18 @@ $row-color-accent-foreground: #fff;
 
 // Feature Content Wrap
 .feature__content-wrap {
-  padding: vr(1);
+    padding: 12px;
 }
 
 
 // Feature Button
 .feature__button {
-  padding: vr(0.25) vr(0.5);
+    padding: 3px 6px;
     text-decoration: none;
 
 
     &:hover {
-      text-decoration: none;
+        text-decoration: none;
     }
 }
 
@@ -2835,19 +2362,19 @@ $row-color-accent-foreground: #fff;
 // .wysiwyg-font-size-smaller { font-size: 14px; }
 
 
-.wysiwyg-font-size-small { @include typi($body-font-map); }
+.wysiwyg-font-size-small { font-size: 14px; }
 
 
-.wysiwyg-font-size-medium { @include typi($h3-font-map); }
+.wysiwyg-font-size-medium { font-size: 16px; }
 
 
-.wysiwyg-font-size-large { @include typi($h2-font-map); }
+.wysiwyg-font-size-large { font-size: 24px; }
 
 
 //.wysiwyg-font-size-larger { @include typi($h2-font-map); }
 
 
-.wysiwyg-font-size-x-large { @include typi($h1-font-map); }
+.wysiwyg-font-size-x-large { font-size: 32px; }
 
 
 //.wysiwyg-font-size-xx-large { @include typi($h1-font-map); }
@@ -2869,7 +2396,7 @@ $row-color-accent-foreground: #fff;
 
 // Element Resets
 img {
-  display: inline-block;
+    display: inline-block;
 }
 
 
@@ -2884,19 +2411,19 @@ img {
     display: block;
 
     // Gives title and description paragraph styling
-  @extend .paragraph;
+    @extend .paragraph;
 }
 
 
 // Image Link
 .image-link {
-  display: block;
-  font-size: 0;
-  line-height: 0;
-  &:hover {
-    // Removes underline from image link
-    text-decoration: none;
-  }
+    display: block;
+    font-size: 0;
+    line-height: 0;
+    &:hover {
+        // Removes underline from image link
+        text-decoration: none;
+    }
 }
 
 
@@ -2906,7 +2433,7 @@ img {
 // ----------
 
 .blog-post-list__image {
-  max-height: 300px;
+    max-height: 300px;
 }
 
 
@@ -2937,7 +2464,7 @@ img {
 // -----------------
 
 .no-image {
-  background-image: url(data:image/png;base64,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);
+    background-image: url(data:image/png;base64,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);
 }
 
 
@@ -2988,7 +2515,7 @@ img {
 
 
 .gallery__figure {
-  margin: 0;
+    margin: 0;
 }
 
 
@@ -3212,7 +2739,7 @@ button,
 
 
 .button {
-    padding: vr(0.25) vr(0.5);
+    padding: 3px 6px;
 }
 
 
@@ -3277,7 +2804,7 @@ button,
         font-weight: $font__button--font-weight;
         line-height: $font__button--line-height;
         letter-spacing: $font__button--letter-spacing;
-        padding: vr(0.5) vr(0.75);
+        padding: 6px vr(0.75);
         text-decoration: none;
         -webkit-user-select: none;
         -moz-user-select: none;
@@ -3340,7 +2867,7 @@ button,
 // Account Name
 .account-link {
     color: $color__h3--text;
-  font-family: $font__h3--font-family;
+    font-family: $font__h3--font-family;
     font-size: $font__h3--font-size;
     font-weight: $font__h3--font-weight;
     letter-spacing: $font__h3--letter-spacing;
@@ -3350,12 +2877,12 @@ button,
 
 // Tweet List Items
 .tweet-item {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
 
 
-  &:last-child {
-    margin-bottom: 0;
-  }
+    &:last-child {
+        margin-bottom: 0;
+    }
 }
 
 
@@ -3402,10 +2929,10 @@ hr.rule {
 .profile__companydescription {
 
 
-  .companystrapline__strapline,
-  .companydescription__description {
-    padding-bottom: 0;
-  }
+    .companystrapline__strapline,
+    .companydescription__description {
+        padding-bottom: 0;
+    }
 }
 
 
@@ -3418,8 +2945,8 @@ hr.rule {
 
 
 .yelpreview {
-  list-style: none;
-  margin: 0;
+    list-style: none;
+    margin: 0;
 }
 
 
@@ -3511,15 +3038,15 @@ hr.rule {
 .sharing-links,
 .tag-list,
 .pagination-numbers {
-  margin: 0;
-  list-style: none;
+    margin: 0;
+    list-style: none;
 }
 
 
 // Resets post image height
 .post-image {
-  font-size: 0;
-  line-height: 0;
+    font-size: 0;
+    line-height: 0;
 }
 
 
@@ -3532,42 +3059,42 @@ hr.rule {
 .blogpost__tag-list,
 .blogpost__tag-item,
 .blogpost__network-item {
-  display: inline-block;
+    display: inline-block;
 }
 
 
 // Post article spacing
 .post-article {
-  margin-bottom: vr(1.5);
+    margin-bottom: 18px;
 
 
-  &:last-child {
-    margin-bottom: 0;
-  }
+    &:last-child {
+        margin-bottom: 0;
+    }
 }
 
 
 // Blog background image
 .blogpostlist__image-link,
 .blogpost__image-link {
-  background-position: -9999px;
-  background-repeat: no-repeat;
+    background-position: -9999px;
+    background-repeat: no-repeat;
 }
 
 
 // Inline blog image
 .post-image .image {
-  max-height: 500px;
+    max-height: 500px;
 
-  @media #{$mobile} {
-    max-height: 300px;
-  }
+    @media #{$mobile} {
+        max-height: 300px;
+    }
 }
 
 
 // Post content container
 .post-content {
-  margin: vr(0.5) 0;
+    margin: 6px 0;
 }
 
 
@@ -3582,13 +3109,13 @@ hr.rule {
 
 // If an excerpt is present add spacing
 .blogpostlist__post-header + .blogpostlist__post-excerpt {
-  margin-top: vr(0.5);
+    margin-top: 6px;
 }
 
 
 // Footer spacing
 .blogpostlist__post-list-footer {
-  margin: vr(1) 0;
+    margin: 12px 0;
 }
 
 
@@ -3602,35 +3129,35 @@ hr.rule {
 
 // If a post body is present add spacing
 .blogpost__post-header + .blogpost__post-body {
-  margin-top: vr(1);
+    margin-top: 12px;
 }
 
 
 // Post category and tags spacing
 .blogpost__post-attributes {
-  margin: vr(0.5) 0;
+    margin: 6px 0;
 }
 
 
 // Sharing buttoms spacing
 .blogpost__network-item {
-  margin-right: vr(0.25);
+    margin-right: 3px;
 
-  @media #{$mobile} {
-    margin-bottom: vr(0.25);
-    margin-right: 0;
-  }
+    @media #{$mobile} {
+        margin-bottom: 3px;
+        margin-right: 0;
+    }
 
 
-  &:last-child {
-    margin-right: 0;
-  }
+    &:last-child {
+        margin-right: 0;
+    }
 }
 
 
 // Blog timestamp
 .post-footer .timestamp {
-  display: block;
+    display: block;
 }
 
 
@@ -3684,19 +3211,19 @@ hr.rule {
 
 
 .ecomproductslist__listing-title + .ecomproductslist__product-filters {
-    margin-top: vr(0.5);
+    margin-top: 6px;
 }
 
 
 .ecomproductslist__listing-order {
-    padding: vr(1) 0;
+    padding: 12px 0;
 }
 
 
 // Product Filters
 .ecomproductslist__form-group {
     display: inline-block;
-    margin-right: vr(0.25);
+    margin-right: 3px;
     vertical-align: bottom;
 }
 
@@ -3720,12 +3247,12 @@ hr.rule {
 
 // Product header and price spacing
 .ecomproductslist__product-content{
-    margin-top: vr(1);
+    margin-top: 12px;
 }
 
 
 .ecomproductslist__listing-footer {
-    margin: vr(1) 0;
+    margin: 12px 0;
 }
 
 
@@ -3735,7 +3262,7 @@ hr.rule {
 
 
     .ecomproductslist__button {
-        padding: vr(0.25) vr(0.5);
+        padding: 3px 6px;
     }
 }
 
@@ -3762,7 +3289,7 @@ hr.rule {
 
 // Product gallery thumbnails
 .ecomproduct__product-gallery {
-    margin: vr(1) 0;
+    margin: 12px 0;
 
 
     .ecomproduct__image {
@@ -3812,7 +3339,7 @@ hr.rule {
 
 
 .product-actions {
-    margin: vr(1) 0;
+    margin: 12px 0;
 }
 
 
@@ -3842,7 +3369,7 @@ hr.rule {
     color: fade($color__p--text, 25%);
     font-size: 14px;
     line-height: 22px;
-    margin-top: vr(0.5);
+    margin-top: 6px;
 }
 
 
@@ -3897,7 +3424,7 @@ hr.rule {
 
 
 .ecombasket__basket-item {
-    margin-bottom: vr(0.5);
+    margin-bottom: 6px;
     position: relative;
 
 
@@ -3909,7 +3436,7 @@ hr.rule {
 
 // Basket Total
 .ecombasket__basket-footer {
-    margin-top: vr(1);
+    margin-top: 12px;
 }
 
 
@@ -3917,7 +3444,7 @@ hr.rule {
 .ecombasket__item-remove {
     font-size: 12px;
     line-height: 12px;
-    padding: vr(0.25) vr(0.5);
+    padding: 3px 6px;
 
 
     // Remove icon spacing
@@ -3945,7 +3472,7 @@ hr.rule {
             border-bottom: 1px solid darken($color__body--background, 10%);
             @include flex-display();
             @include flex-direction(column);
-            padding-top: vr(1);
+            padding-top: 12px;
         }
     }
 
@@ -3962,7 +3489,7 @@ hr.rule {
     // Table Cell: General
     .ecombasketsummary__cell {
         border-radius: 0;
-        padding: vr(0.25) vr(0.5);
+        padding: 3px 6px;
         text-align: left;
         vertical-align: middle;
 
@@ -4027,7 +3554,7 @@ hr.rule {
 .ecombasketsummary__summary-form {
 
     @media #{$mobile} {
-        margin-top: vr(1);
+        margin-top: 12px;
     }
 }
 
@@ -4053,7 +3580,7 @@ hr.rule {
     // Quantity Inputs
     .button--quantity {
         line-height: initial;
-        padding: 0 vr(0.25);
+        padding: 0 3px;
     }
 }
 
