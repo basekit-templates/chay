@@ -25,8 +25,17 @@
     strong,
     code,
     pre,
-    span {
+    span,
+    label,
+    input,
+    textarea,
+    .navigation-item .item-name {
         color: $row-color-dark;
+    }
+
+
+    .selected .navigation-item .item-name {
+        color: $row-color-accent;
     }
 
 
@@ -34,14 +43,21 @@
     h2,
     h3,
     h4,
-    h5 {
+    h5,
+    .navigation-item:hover .item-name {
         color: $row-color-darkest;
+    }
+
+
+    input,
+    textarea {
+        border: 2px solid fade-out($row-color-dark, 0.2);
     }
 
 
     button,
     .button {
-        background-color: $row-color-darkest;
+        background-color: $row-color-dark;
         color: $row-color-lightest;
     }
 }
@@ -60,8 +76,17 @@
     strong,
     code,
     pre,
-    span {
+    span,
+    label,
+    input,
+    textarea,
+    .navigation-item .item-name {
         color: $row-color-dark;
+    }
+
+
+    .selected .navigation-item .item-name {
+        color: $row-color-darkest;
     }
 
 
@@ -69,21 +94,28 @@
     h2,
     h3,
     h4,
-    h5 {
+    h5,
+    .navigation-item:hover .item-name {
         color: $row-color-darkest;
+    }
+
+
+    input,
+    textarea {
+        border-bottom: 2px solid fade-out($row-color-dark, 0.2);
     }
 
 
     button,
     .button {
-        background-color: $row-color-darkest;
+        background-color: $row-color-dark;
         color: $row-color-lightest;
     }
 }
 
 
 .row--dark {
-    background-color: $row-color-darkest;
+    background-color: $row-color-dark;
 
 
     body,
@@ -95,8 +127,18 @@
     strong,
     code,
     pre,
-    span {
-        color: $row-color-light;
+    span,
+    label,
+    input,
+    textarea,
+    .navigation-item .item-name {
+        color: $row-color-lightest;
+    }
+
+
+    .selected .navigation-item .item-name,
+    .navigation-item:hover .item-name {
+        color: $row-color-darkest;
     }
 
 
@@ -109,9 +151,15 @@
     }
 
 
+    input,
+    textarea {
+        border-bottom: 2px solid fade-out($row-color-light, 0.2);
+    }
+
+
     button,
     .button {
         background-color: $row-color-accent;
-        color: $row-color-darkest;
+        color: $row-color-dark;
     }
 }

@@ -12,10 +12,10 @@
 // -----------------------------
 
 
-$style-set-id: 'example_02' !default;                 // Style Set Choice
-@import "style/style-sets";                     // Style Sets
+$style-set-id: 'example_02' !default;                       // Style Set Choice
+@import "style/style-sets";                                 // Style Sets
 
 
 // Framework
-@import "style/bk-sass-framework-v8";           // SASS Framework V8
-@import "style/colour";                         // Template Colour
+@import "style/bk-sass-framework-v8";                       // SASS Framework V8
+@import "style/colour";                                     // Template Colour

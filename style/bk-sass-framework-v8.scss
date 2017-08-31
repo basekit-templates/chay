@@ -1985,7 +1985,7 @@ input[type="checkbox"] {
     &-bottom {
 
 
-        &.row--full-height {
+        &.row--height-full {
             @include flex(0 1 auto);
             @include flex-display;
             @include flex-direction(row);
@@ -2005,7 +2005,7 @@ input[type="checkbox"] {
     }
 
     // Full Height Alignment top
-    &-top.row__height--full {
+    &-top.row--height-full {
         @include align-items(flex-start);
     }
 
@@ -2020,7 +2020,7 @@ input[type="checkbox"] {
     }
 
     // Full Height Alignment Center
-    &-center.row__height--full {
+    &-center.row--height-full {
         @include align-items(center);
     }
 
@@ -2035,10 +2035,9 @@ input[type="checkbox"] {
     }
 
     // Full Height Alignment Bottom
-    &-bottom.row__height--full {
+    &-bottom.row--height-full {
         @include align-items(flex-end);
     }
-
 }
 
 
@@ -2053,10 +2052,10 @@ input[type="checkbox"] {
 // -------------------------------------
 
 
-.row__background-type {
+.row--background-type {
 
 
-    &--image {
+    &-image {
         background-position: center;
         background-repeat: no-repeat;
         background-size: cover;
@@ -2075,28 +2074,28 @@ input[type="checkbox"] {
 // -------------------------------------
 
 
-.row {
+.row--height {
 
 
-    &--no-padding {
+    &-no-padding {
         padding-top: 0;
         padding-bottom: 0;
     }
 
 
-    &--thin-height {
+    &-thin {
         padding-top: 15px;
         padding-bottom: 15px;
     }
 
 
-    &--default-height {
+    &-default {
         padding-top: 40px;
         padding-bottom: 40px;
     }
 
 
-    &--full-height {
+    &-full {
         min-height: 100vh;
         padding-top: 80px;
         padding-bottom: 80px;
@@ -2140,7 +2139,6 @@ input[type="checkbox"] {
 .row__container {
     width: 100%;
 }
-
 //
 // -----------------------------
 //  CORE - Row Style (Colour)
@@ -2153,31 +2151,92 @@ input[type="checkbox"] {
 // -------------------------------------
 
 
-// Colour variables
-$row-color--lightest: #FFFFFF;
-$row-color--light: #ECE7DD;
-$row-color--accent: #FEB904;
-$row-color--dark: #888888;
-$row-color--darkest: #082D3A;
+$style-sets: (
+    example_01: (
+        row-color-darkest: #3E417E,
+        row-color-dark: #3E417E,
+        row-color-lightest: #ffffff,
+        row-color-light: #ffffff,
+        row-color-accent: #E30019,
+        row-color-dark-foreground: #ffffff,
+        row-color-light-foreground: #1a1919,
+        row-color-accent-foreground: #ffffff,
+        row-font-body: 'Poppins',
+        row-font-heading: 'Poppins',
+        row-font-weight: 700
+    ),
+    example_02: (
+        row-color-darkest: #082D3A,
+        row-color-dark: #0C495E,
+        row-color-lightest: #ffffff,
+        row-color-light: #ECE7DD,
+        row-color-accent: #FEB904,
+        row-color-dark-foreground: #ECE7DD,
+        row-color-light-foreground: #0C495E,
+        row-color-accent-foreground: #888888,
+        row-font-heading: 'Lato',
+        row-font-body: 'Josefin Sans',
+        row-font-weight: 300
+    ),
+    example_03: (
+        row-color-darkest: #2B2B3C,
+        row-color-dark: #2B2B3C,
+        row-color-lightest: #ffffff,
+        row-color-light: #ffffff,
+        row-color-accent: #998d5e,
+        row-color-dark-foreground: #ffffff,
+        row-color-light-foreground: #2B2B3C,
+        row-color-accent-foreground: #ffffff,
+        row-font-body: 'Rubik',
+        row-font-heading: 'Playfair Display',
+        row-font-weight: 400
+    ),
+    example_04: (
+        row-color-darkest: #3E417E,
+        row-color-dark: #0c495e,
+        row-color-lightest: #ffffff,
+        row-color-light: #ebe7dc,
+        row-color-accent: #feb904,
+        row-color-dark-foreground: #ffffff,
+        row-color-light-foreground: #65797d,
+        row-color-accent-foreground: #072d3a,
+        row-font-body: 'Lato',
+        row-font-heading: 'Lato',
+        row-font-weight: 300
+    )
+);
 
-$row-color--light-foreground: $row-color--light;
-$row-color--accent-foreground: $row-color--accent;
-$row-color--dark-foreground: $row-color--darkest;
+
+$style-set: map-get($style-sets, $style-set-id);
+
+$row-color-dark: map-get($style-set, 'row-color-dark');
+$row-color-darkest: map-get($style-set, 'row-color-darkest');
+$row-color-light: map-get($style-set, 'row-color-light');
+$row-color-lightest: map-get($style-set, 'row-color-lightest');
+$row-color-accent: map-get($style-set, 'row-color-accent');
+$row-color-dark-foreground: map-get($style-set, 'row-color-dark-foreground');
+$row-color-light-foreground: map-get($style-set, 'row-color-light-foreground');
+$row-color-accent-foreground: map-get($style-set, 'row-color-accent-foreground');
+$row-font-heading: map-get($style-set, 'row-font-heading');
+$row-font-body: map-get($style-set, 'row-font-body');
+$row-font-weight: map-get($style-set, 'row-font-weight');
 
 
 // Colour application with backup
 :root {
-    --row-color--lightest: $row-color--lightest;
-    --row-color--light: $row-color--light;
-    --row-color--accent: $row-color--accent;
-    --row-color--dark: $row-color--dark;
-    --row-color--darkest: $row-color--darkest;
-
-    --row-color--dark-foreground: $row-color--dark-foreground;
-    --row-color--light-foreground: $row-color--light-foreground;
-    --row-color--accent-foreground: $row-color--accent-foreground;
+    --style-set-id: unquote($style-set-id);
+    --row-color-darkest: $row-color-darkest;
+    --row-color-dark: $row-color-dark;
+    --row-color-lightest: $row-color-lightest;
+    --row-color-light: $row-color-light;
+    --row-color-accent: $row-color-accent;
+    --row-color-dark-foreground: $row-color-dark-foreground;
+    --row-color-light-foreground: $row-color-light-foreground;
+    --row-color-accent-foreground: $row-color-accent-foreground;
+    --row-font-heading: $row-font-heading;
+    --row-font-body: $row-font-body;
+    --row-font-weight: $row-font-weight;
 }
-
 
 
 
